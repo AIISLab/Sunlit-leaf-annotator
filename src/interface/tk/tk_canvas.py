@@ -124,29 +124,47 @@ class Image(object):
         """Close the image.
         """
         if self._canvas is not None:
-            self.parent.image = None
-            #self._im.set_data(np.zeros((0,0,3), float))
-            #self._canvas.draw()
-            self._canvas.get_tk_widget().pack_forget()
-            self._canvas.get_tk_widget().destroy()
-
-            if self._toolbar is not None:
-                self._toolbar.pack_forget()
-                self._toolbar.destroy()
-
-            # The command plt.clf() is used to minimize the effects of follow warning:
-            # "RuntimeWarning: More than 20 figures have been opened. Figures created through the pyplot interface 
-            # (`matplotlib.pyplot.figure`) are retained until explicitly closed and may consume too much memory."
-            # However this part of code need to be refactored to prevent the memory leak!!!
-            plt.clf()
+            # Store a temporary reference to check if we need to close
+            needs_closing = True
             
-            self._im = None
-            self._canvas = None
-            self._fig = None
-            self._ax = None
-            self._toolbar = None
-            
-            return True
+            try:
+                # Properly clean up matplotlib components in a safer order
+                if self._toolbar is not None:
+                    self._toolbar.pack_forget()
+                    self._toolbar.destroy()
+                    self._toolbar = None
+                
+                if self._canvas is not None:
+                    self._canvas.get_tk_widget().pack_forget()
+                    self._canvas.get_tk_widget().destroy()
+                    self._canvas = None
+                
+                # Clear the figure using a safer approach
+                if self._fig is not None:
+                    # Avoid using plt.clf() directly
+                    self._fig.clear()
+                    # Close the figure explicitly
+                    plt.close(self._fig)
+                    
+                # Clear image references
+                self._im = None
+                self._fig = None
+                self._ax = None
+                
+                # Set parent image to None at the end
+                self.parent.image = None
+                
+                return True
+            except Exception as e:
+                print(f"Warning: Error during image cleanup: {str(e)}")
+                # Even if there's an error, we consider the image closed
+                self.parent.image = None
+                self._im = None
+                self._canvas = None
+                self._fig = None
+                self._ax = None
+                self._toolbar = None
+                return True
         return False
 
         

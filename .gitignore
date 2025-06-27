@@ -3,3 +3,5 @@ data/*
 !data/class_dict.csv
 !data/mask_creator.py
 !data/thermal_upscaler.py
+/src/venv
+/venv

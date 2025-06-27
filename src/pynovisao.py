@@ -258,9 +258,13 @@ class Act(object):
         
         if self.tk.close_image():
             self.tk.write_log("Closing image...")
-            self._const_image = None
+            # Clear references in a specific order
             self._image = None
+            self._const_image = None 
             self._image_path = None
+            # Reset segmenter to clear any existing segmentation
+            self.segmenter.reset()
+            self._gt_segments = None
 
     def add_class(self, dialog = True, name = None, color = None):
         """Add a new class.

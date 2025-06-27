@@ -31,7 +31,7 @@ class SimpleDialog(Tk.Toplevel):
         title : string, optional, default = None
             Dialog title.
         command_ok : function, optional, default = None
-            Unused argument.
+            Unused argument. 
         """
         self.parent = parent
 

@@ -157,10 +157,15 @@ class TkInterface(Interface):
             Callback to be executed on image click.
         """
         if self._image is not None:
+            # Close and dispose of the old image completely
             self._image.close()
-           
-        self._image.render(image, lambda event, *_: self._apply( onclick, event ))
             
+            # Recreate the image object
+            self._image = tk_local.Image(self._root)
+       
+        # Now render the new image
+        self._image.render(image, lambda event, *_: self._apply(onclick, event))
+        
         if title is not None:
             self.set_subtitle(title)
             
